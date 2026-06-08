@@ -5,15 +5,16 @@ from collections.abc import Callable
 def mage_counter() -> Callable:
     count = 0
 
-    def incrementation() -> None:
+    def incrementation() -> int:
         nonlocal count
         count += 1
         return count
     return incrementation
 
-    
+
 def spell_accumulator(initial_power: int) -> Callable:
     power = initial_power
+
     def accumulator(add: int) -> int:
         nonlocal power
         power += add
@@ -22,14 +23,22 @@ def spell_accumulator(initial_power: int) -> Callable:
 
 
 def enchantment_factory(enchantment_type: str) -> Callable:
+
     def enchant(item: str) -> str:
         return f"{enchantment_type} {item}"
-    return enchant 
+    return enchant
 
 
+def memory_vault() -> dict[str, Callable]:
+    storage: dict = {}
 
+    def store(key: str, value: object) -> None:
+        storage[key] = value
 
-# def memory_vault() -> dict[str, Callable]
+    def recall(key: str) -> object:
+        return storage.get(key, "Memory not found")
+    return {'store': store, 'recall': recall}
+
 
 def main() -> None:
     print("Testing mage counter...")
@@ -49,6 +58,14 @@ def main() -> None:
     frozen = enchantment_factory("Frozen")
     print(flaming("Sword"))
     print(frozen("Shield"))
+
+    print("\nTesting memory vault...")
+    vault = memory_vault()
+    vault['store']('secret', 42)
+    print("Store 'secret' = 42")
+    print(f"Recall 'secret': {vault['recall']('secret')}")
+    print(f"Recall 'unknown': {vault['recall']('unknown')}")
+
 
 if __name__ == "__main__":
     main()
